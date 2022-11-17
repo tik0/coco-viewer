@@ -202,9 +202,17 @@ def draw_bboxes(draw, objects, labels, obj_categories, ignore, width, label_size
 
 def draw_masks(draw, objects, obj_categories, ignore, alpha):
     """Draws a masks over image."""
-    masks = [obj["segmentation"] for obj in objects]
+    masks = []
+    for obj in objects:
+        if "segmentation" in obj:
+            masks.append(obj["segmentation"])
+        else:
+            print_info("'segmentation' key missing for annotation id " + str(obj["id"]))
+            masks.append(None)
     # Draw masks
     for i, (c, m) in enumerate(zip(obj_categories, masks)):
+        if m is None:
+            continue
         if i not in ignore:
             alpha = alpha
             fill = tuple(list(c[-1]) + [alpha])
